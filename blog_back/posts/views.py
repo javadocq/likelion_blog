@@ -21,7 +21,7 @@ class PostList(APIView):
         else:
             return Response(serializer.errors)
 class PostDetail(APIView):
-    def get_object(self, request, id):
+    def get_object(self,id):
         try:
             post = Posts.objects.get(id = id)
         except:
