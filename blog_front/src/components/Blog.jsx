@@ -3,32 +3,9 @@ import axios from "axios";
 import Post from "./Post.jsx";
 
 const Blog = () => {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "React와 Next.js 비교",
-      content: "React와 Next.js는 서로 다르면서도 비슷한 프레임워크입니다.",
-      author: "에이미",
-      created_at: "2024-02-09T12:00:00Z",
-      updated_at: "2024-02-09T12:30:00Z",
-    },
-    {
-      id: 2,
-      title: "Django로 API 만들기",
-      content: "Django Rest Framework를 활용하면 API 개발이 쉬워집니다.",
-      author: "한양대",
-      created_at: "2024-02-08T10:00:00Z",
-      updated_at: "2024-02-08T11:00:00Z",
-    },
-    {
-      id: 3,
-      title: "AWS 배포 가이드",
-      content: "EC2, S3, RDS를 활용하여 프로젝트를 배포하는 방법을 알아봅시다.",
-      author: "멋쟁이사자처럼",
-      created_at: "2024-02-07T15:00:00Z",
-      updated_at: "2024-02-07T16:00:00Z",
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
+  const [isAdd, setIsAdd] = useState(false);
+  const [isDel, setIsDel] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState("");
   const [newPostContent, setNewPostContent] = useState("");
   const [newPostAuthor, setNewPostAuthor] = useState("");
@@ -38,14 +15,14 @@ const Blog = () => {
     const fetchGet = async () => {
       try {
         const response = await axios.get("http://localhost:8000/posts/");
-        setPosts(response.data.results);
-        console.log(response.data.results);
+        setPosts(response.data);
+        console.log(response.data);
       } catch (e) {
         console.log(e);
       }
     };
     fetchGet();
-  }, []);
+  }, [isDel, isAdd]);
 
   // 입력 값 처리
   const handleTitleChange = (e) => {
@@ -61,19 +38,20 @@ const Blog = () => {
   };
 
   // 새 포스트 추가
-  const addNewPost = () => {
+  const addNewPost = async () => {
     if (newPostTitle && newPostContent && newPostAuthor) {
       const newPost = {
         title: newPostTitle,
         content: newPostContent,
         author: newPostAuthor,
       };
+    
       try {
-        const response = axios.post("http://127.0.0.1:8000/posts/", newPost); // API URL
-        setPosts([...posts, response.data]); // 새 포스트 추가
+        const response = await axios.post("http://127.0.0.1:8000/posts/", newPost); // API URL
         setNewPostTitle("");
         setNewPostContent("");
         setNewPostAuthor("");
+        setIsAdd(!isAdd);
         console.log(response.data);
       } catch (error) {
         console.error("Error adding post:", error);
@@ -86,6 +64,7 @@ const Blog = () => {
         const response = await axios.delete(
           `http://localhost:8000/posts/${postId}/`
         );
+        setIsDel(!isDel);
         console.log(response.data);
       } catch (e) {
         console.log(e);
@@ -165,13 +144,13 @@ const Blog = () => {
       >
         {posts.map((post) => (
           <Post
-            key={post.id}
-            id={post.id}
-            title={post.title}
-            content={post.content}
-            author={post.author}
-            createdAt={post.created_at}
-            updatedAt={post.updated_at}
+            key={post?.id}
+            id={post?.id}
+            title={post?.title}
+            content={post?.content}
+            author={post?.author}
+            createdAt={post?.created_at}
+            updatedAt={post?.updated_at}
             handleDelete={handleDelete}
           />
         ))}
