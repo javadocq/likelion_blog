@@ -35,17 +35,18 @@ const Blog = () => {
 
   // 게시물 목록을 API로부터 가져오기
   useEffect(() => {
-    const fetchGet = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/posts/");
-        setPosts(response.data.results);
-        console.log(response.data.results);
-      } catch (e) {
-        console.log(e);
-      }
-    };
     fetchGet();
   }, []);
+
+  const fetchGet = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/posts/");
+      setPosts(response.data.results);
+      console.log(response.data.results);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   // 입력 값 처리
   const handleTitleChange = (e) => {
@@ -61,7 +62,7 @@ const Blog = () => {
   };
 
   // 새 포스트 추가
-  const addNewPost = () => {
+  const addNewPost = async () => {
     if (newPostTitle && newPostContent && newPostAuthor) {
       const newPost = {
         title: newPostTitle,
@@ -69,7 +70,10 @@ const Blog = () => {
         author: newPostAuthor,
       };
       try {
-        const response = axios.post("http://127.0.0.1:8000/posts/", newPost); // API URL
+        const response = await axios.post(
+          "http://127.0.0.1:8000/posts/",
+          newPost
+        ); // API URL
         setPosts([...posts, response.data]); // 새 포스트 추가
         setNewPostTitle("");
         setNewPostContent("");
@@ -84,7 +88,7 @@ const Blog = () => {
     const fetchDelete = async () => {
       try {
         const response = await axios.delete(
-          `http://localhost:8000/posts/${postId}/`
+          `http://127.0.0.1:8000/posts/${postId}/`
         );
         console.log(response.data);
       } catch (e) {
@@ -165,13 +169,13 @@ const Blog = () => {
       >
         {posts.map((post) => (
           <Post
-            key={post.id}
-            id={post.id}
-            title={post.title}
-            content={post.content}
-            author={post.author}
-            createdAt={post.created_at}
-            updatedAt={post.updated_at}
+            key={post?.id}
+            id={post?.id}
+            title={post?.title}
+            content={post?.content}
+            author={post?.author}
+            createdAt={post?.created_at}
+            updatedAt={post?.updated_at}
             handleDelete={handleDelete}
           />
         ))}
